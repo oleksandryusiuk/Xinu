@@ -35,7 +35,7 @@ or debug/research it using gdb-multiarch by running:
 make debug
 ```
 to do in future:
-Scheduling
+Scheduling,
 Filesystem
 
 --------------------
