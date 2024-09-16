@@ -8,6 +8,7 @@ OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o kernel/paging_init.o}
 
 CC = /usr/bin/i686-linux-gnu-gcc
 GDB = /usr/bin/gdb-multiarch
+LD = /usr/bin/i686-linux-gnu-ld
 # -g debugging flag
 CFLAGS = -g
 
@@ -16,10 +17,10 @@ os-image: boot/32bit_boot.bin kernel.bin
 	cat $^ > os-image		
 
 kernel.bin : boot/kernel_entry.o ${OBJ}
-	i686-linux-gnu-ld -o $@ -Ttext 0x1000 $^ --oformat binary
+	${LD} -o $@ -Ttext 0x1000 $^ --oformat binary
 
 kernel.elf : boot/kernel_entry.o ${OBJ}
-	i686-linux-gnu-ld -o $@ -Ttext 0x1000 $^ 
+	${LD} -o $@ -Ttext 0x1000 $^ 
 
 run: os-image
 	qemu-system-i386 -fda os-image

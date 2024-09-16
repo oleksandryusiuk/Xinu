@@ -1,9 +1,16 @@
-// keyboard driver
+/** @file keyboard.c
+ *
+ * @brief Keyboard driver that reads scancode from specified location, converts 
+ * it into ASCII char and prints it on screen.
+ *
+ */
+
 #include "keyboard.h"
 #include "ports.h"
 #include "../cpu/isr.h"
 #include "screen.h"
 #include "../libc/function.h"
+
 #define BACKSPACE 0x0E
 #define ENTER 0x1C
 
@@ -22,21 +29,30 @@ const char sc_ascii[] = { '?', '?', '1', '2', '3', '4', '5', '6',
         'H', 'J', 'K', 'L', ';', '\'', '`', '?', '\\', 'Z', 'X', 'C', 'V', 
         'B', 'N', 'M', ',', '.', '/', '?', '?', '?', ' '};
 
-static void keyboard_callback(registers_t regs) {
+// Read scancode from 0x60, handles Enter/Backspace and prints all other chars.
+// 
+static void keyboard_callback(registers_t regs) 
+{
     /* The PIC leaves us the scancode in port 0x60 */
     uint8_t scancode = inb(0x60);
-    
     if (scancode > SC_MAX) return;
-    if (scancode == BACKSPACE) {
+    // Backspace handler
+    if (scancode == BACKSPACE) 
+    {
         backspace(key_buffer);
         kprint_backspace();
-    } else if (scancode == ENTER) {
+    }
+    // Enter Handler
+    else if (scancode == ENTER) 
+    {
         kprint("\n");
-        user_input(key_buffer); /* kernel-controlled function */
+        user_input(key_buffer);
         key_buffer[0] = '\0';
-    } else {
+    }
+    // Print any other character;
+    else
+    {
         char letter = sc_ascii[(int)scancode];
-        /* Remember that kprint only accepts char[] */
         char str[2] = {letter, '\0'};
         append(key_buffer, letter);
         kprint(str);
@@ -44,6 +60,9 @@ static void keyboard_callback(registers_t regs) {
     UNUSED(regs);
 }
 
-void init_keyboard() {
+// Maps keyboard_callback to be handler function for IRQ1.
+//
+void init_keyboard() 
+{
    register_interrupt_handler(IRQ1, keyboard_callback); 
 }

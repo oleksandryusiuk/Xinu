@@ -1,8 +1,14 @@
+/** @file paging.c
+ * 
+ * @brief contains functions to initialize heap and create page entry.
+ *
+ */
+
 #include "../libc/heap.h"
 #include "paging.h"
+unsigned int *page_directory;
 
 int create_page_entry( int base_address, char present, char writable, char privilege_level, char cache_enabled, char write_through_cache, char accessed, char page_size, char dirty )
-
 {
   int entry = 0;
 	

@@ -1,6 +1,12 @@
-/* personal notes: ISR is a the same as interrupt handler, which is  */
-/* a function which will handle the interrupt that happpened.        */
-/* IRQ - signal sent to processor which will call interrupt handler. */
+/** @file isr.c
+ * 
+ * @brief contains functions to initialize all ISR`s, IRQ`s, handler functions for ISR and IRQ.
+ *
+ */
+
+// ISR is a the same as interrupt handler, which is  
+// a function which will handle the interrupt that happpened.        
+// IRQ - signal sent to processor which will call interrupt handler. 
 
 
 #include "isr.h"
@@ -8,10 +14,13 @@
 #include "../drivers/screen.h"
 #include "../libc/util.h"
 #include "../drivers/ports.h"
+#include "timer.h"
+#include "../drivers/keyboard.h"
 
 isr_t interrupt_handlers[256];
 
-void isr_install() {
+void isr_install() 
+{
     set_idt_gate(0, (uint32_t)isr0);
     set_idt_gate(1, (uint32_t)isr1);
     set_idt_gate(2, (uint32_t)isr2);
@@ -45,10 +54,11 @@ void isr_install() {
     set_idt_gate(30, (uint32_t)isr30);
     set_idt_gate(31, (uint32_t)isr31);
 
-/* weird code to to remap Programmable Interrupt Controller *
- * remap needed because PIC maps IRQs 0-7 to INT 0x8-0xF    *
- * which conflicts with our ready ISRs; so we remap irqs to *
- * to ISRs 32-47.                                           */
+// weird code to to remap Programmable Interrupt Controller 
+// remap needed because PIC maps IRQs 0-7 to INT 0x8-0xF    
+// which conflicts with our ready ISRs; so we remap irqs to 
+// to ISRs 32-47.                                           
+//
     outb(0x20, 0x11);
     outb(0xA0, 0x11);
     outb(0x21, 0x20);
@@ -60,8 +70,8 @@ void isr_install() {
     outb(0x21, 0x0);
     outb(0xA1, 0x0); 
 
-    // Install the IRQs
-  
+// Install the IRQs
+//  
     set_idt_gate(32, (uint32_t)irq0);
     set_idt_gate(33, (uint32_t)irq1);
     set_idt_gate(34, (uint32_t)irq2);
@@ -79,11 +89,17 @@ void isr_install() {
     set_idt_gate(46, (uint32_t)irq14);
     set_idt_gate(47, (uint32_t)irq15);
 
-    set_idt(); // Load with ASM
+// Load with ASM
+    set_idt(); 
 }
 
-void isr_handler(registers_t r) {
-    char *exception_messages[] = {
+// Simple ISR handler which will print exception message and number.
+//
+void isr_handler(registers_t r) 
+{
+
+    char *exception_messages[] = 
+    {
         "Division By Zero",
         "Debug",
         "Non Maskable Interrupt",
@@ -129,22 +145,32 @@ void isr_handler(registers_t r) {
     kprint("\n");
 }
 
-void register_interrupt_handler(uint8_t n, isr_t handler) {
+// Put specific handler into interrupt handlers table
+//
+void register_interrupt_handler(uint8_t n, isr_t handler) 
+{
     interrupt_handlers[n] = handler;
 }
 
-void irq_handler(registers_t r) {
+//
+//
+void irq_handler(registers_t r) 
+{
     if (r.int_no >= 40) outb(0xA0, 0x20);
     outb(0x20, 0x20);
 
-    if (interrupt_handlers[r.int_no] != 0 ) {
+    if (interrupt_handlers[r.int_no] != 0 ) 
+    {
         isr_t handler = interrupt_handlers[r.int_no];
         handler(r);
     }
 
 }
 
-void irq_install() {
+// Main IRQ init function
+//
+void irq_install() 
+{
   // enable interruptions
   asm volatile("sti");
   // enable IRQ timer

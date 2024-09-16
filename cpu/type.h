@@ -1,3 +1,9 @@
+/** @file type.h
+ * 
+ * @brief provide clear data types.
+ *
+ */
+ 
 #ifndef TYPES_H
 #define TYPES_H
 

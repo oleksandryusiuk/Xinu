@@ -26,7 +26,7 @@ sudo apt install qemu-system-i386 i686-linux-gnu-gcc gdb-multiarch
 git clone https://github.com/oleksandryusiuk/Xinu.git
 cd Xinu
 ```
-3. Build using Make:
+3. Make sure that CC, GDB and LD compile variables correctly show the pathway to your tools; After everything is configured, run the following:
 ```
 make run
 ```
@@ -35,8 +35,7 @@ or debug/research it using gdb-multiarch by running:
 make debug
 ```
 to do in future:
-Scheduling,
-Filesystem
+Scheduling, Filesystem
 
 --------------------
 

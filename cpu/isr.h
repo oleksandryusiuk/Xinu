@@ -1,3 +1,9 @@
+/** @file isr.h
+ * 
+ * 
+ *
+ */
+ 
 #ifndef ISR_H
 #define ISR_H
 
@@ -73,8 +79,10 @@ extern void irq15();
 #define IRQ15 47
 
 
-/* struct where many register values are stored */
-typedef struct {
+// struct where many register values are stored.
+//
+typedef struct 
+{
   uint32_t ds;
   uint32_t edi, esii, ebp, esp, ebx, edx, ecx, eax;
   uint32_t int_no, err_code;
@@ -84,7 +92,9 @@ typedef struct {
 void isr_install();
 void isr_handler(registers_t r);
 void irq_install();
+
 typedef void (*isr_t)(registers_t);
+
 void register_interrupt_handler(uint8_t n, isr_t handler);
 
 
